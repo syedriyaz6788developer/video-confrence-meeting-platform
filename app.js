@@ -45,6 +45,14 @@ io.on("connection", (socket) => {
     io.to(to).emit("ice-candidate", { candidate, from: socket.id });
   });
 
+socket.on("leave-room", (roomId) => {
+  socket.leave(roomId);
+  if (rooms[roomId]) {
+    rooms[roomId] = rooms[roomId].filter(id => id !== socket.id);
+    io.to(roomId).emit("participants", rooms[roomId]);
+  }
+  console.log(`User ${socket.id} left room ${roomId}`);
+});
   socket.on("disconnect", () => {
 
     for (const roomId in rooms) {
